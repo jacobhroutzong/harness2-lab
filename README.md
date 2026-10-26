@@ -76,7 +76,7 @@ python -m h2lab.cli --tasks fin-01,fin-02,fin-03 --k 2 -v
 ANTHROPIC_API_KEY=... python -m h2lab.cli --backend anthropic --tasks ops-02 --k 1
 HF_TOKEN=... python -m h2lab.cli --backend openai --base-url huggingface --model <model-id> --tasks ana-01
 
-# tests (41, about 25 s, all offline)
+# tests (43, all offline; runtime depends on platform)
 pip install -r requirements-dev.txt && python -m pytest -q
 ```
 

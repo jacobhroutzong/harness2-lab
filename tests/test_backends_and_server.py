@@ -4,7 +4,7 @@ from types import SimpleNamespace as NS
 
 from fastapi.testclient import TestClient
 
-from app.server import app
+from app.server import RUNS, Run, app
 from h2lab.llm.anthropic_llm import AnthropicLLM
 from h2lab.llm.base import ToolCall, ToolSpec
 from h2lab.llm.openai_compat import OpenAICompatLLM
@@ -89,3 +89,24 @@ def test_server_rejects_bad_requests():
     assert client.post("/api/runs", json={"backend": "sim", "tasks": ["nope"]}).status_code == 400
     assert client.post("/api/runs", json={"backend": "anthropic", "tasks": ["fin-01"]}).status_code == 400
     assert client.post("/api/runs", json={"backend": "sim", "tasks": ["fin-01"], "mode": "x"}).status_code == 400
+
+
+def test_event_stream_reconnect_resumes_after_last_event(monkeypatch):
+    run = Run(id="resume-check", kind="stream", config={}, status="done",
+              events=[{"type": "stream_start"}, {"type": "stream_end"}])
+    monkeypatch.setitem(RUNS, run.id, run)
+    client = TestClient(app)
+    response = client.get(f"/api/runs/{run.id}/events", headers={"Last-Event-ID": "1"})
+    events = [json.loads(line[6:]) for line in response.text.splitlines() if line.startswith("data: ")]
+    assert [event["type"] for event in events] == ["stream_end", "done"]
+    assert "id: 2\n" in response.text
+    response = client.get(f"/api/runs/{run.id}/events", headers={"Last-Event-ID": "invalid"})
+    assert "id: 1\n" in response.text and '"stream_start"' in response.text
+
+
+def test_server_rejects_invalid_budgets_before_registering_run():
+    client = TestClient(app)
+    for field, value in [("adaptive_budget", "nan"), ("adaptive_budget", 0),
+                         ("max_cost_usd", "inf"), ("max_cost_usd", -1)]:
+        response = client.post("/api/runs", json={field: value})
+        assert response.status_code == 422

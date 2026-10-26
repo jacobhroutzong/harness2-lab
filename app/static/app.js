@@ -380,6 +380,7 @@ function apply(ev) {
 const STRUCTURAL_DELAY = { narrated: 260, fast: 45, instant: 0 };
 function pump() {
   clearTimeout(LAB.timer);
+  const previousStatus = LAB.status;
   const delay = STRUCTURAL_DELAY[LAB.speed];
   let changed = false;
   const t0 = performance.now();
@@ -393,7 +394,10 @@ function pump() {
     if (structural && delay) { LAB.last = performance.now(); break; }
     if (performance.now() - t0 > 30) break;
   }
-  if (changed && location.hash.startsWith("#/lab")) renderLabMain();
+  if (changed && location.hash.startsWith("#/lab")) {
+    renderLabMain();
+    if (LAB.status !== previousStatus) renderConfig();
+  }
   if (LAB.queue.length) LAB.timer = setTimeout(pump, delay ? Math.max(16, delay / 4) : 16);
 }
 
@@ -411,6 +415,7 @@ function connect(id) {
 }
 
 async function startRun() {
+  if (LAB.status === "running") return;
   const c = LAB.cfg;
   const body = { ...c, k: Number(c.k), seed: Number(c.seed), adaptive_budget: Number(c.adaptive_budget),
     max_cost_usd: Number(c.max_cost_usd) };

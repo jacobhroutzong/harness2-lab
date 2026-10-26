@@ -65,8 +65,8 @@ class RunRequest(BaseModel):
     library: bool = True
     scoping: bool = True
     composition: bool = True
-    adaptive_budget: float = 2.0
-    max_cost_usd: float = 5.0
+    adaptive_budget: float = Field(default=2.0, ge=1, le=3, allow_inf_nan=False)
+    max_cost_usd: float = Field(default=5.0, ge=0.5, allow_inf_nan=False)
 
 
 class LabRequest(BaseModel):
@@ -240,16 +240,20 @@ async def run_events(run_id: str, request: Request) -> StreamingResponse:
         raise HTTPException(404, "unknown run")
 
     async def stream():
-        i, idle = 0, 0.0
+        try:
+            i = max(0, min(int(request.headers.get("last-event-id", "0")), len(run.events)))
+        except ValueError:
+            i = 0
+        idle = 0.0
         while True:
             if await request.is_disconnected():
                 return
             batch = run.events[i:]
             if batch:
-                i += len(batch)
                 idle = 0.0
                 for ev in batch:
-                    yield f"data: {json.dumps(ev, default=str)}\n\n"
+                    i += 1
+                    yield f"id: {i}\ndata: {json.dumps(ev, default=str)}\n\n"
             elif run.status != "running":
                 yield f"data: {json.dumps({'type': 'done', 'status': run.status, 'error': run.error})}\n\n"
                 return
