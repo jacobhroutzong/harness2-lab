@@ -1,0 +1,13 @@
+Harness² Lab
+Copyright 2026 the Harness² Lab contributors. Licensed under the Apache License, Version 2.0.
+
+This project is an independent, from-scratch implementation of the method described in
+"Harness²: Recursive Agent Harnessing for an Open World" (Xu, Chen, CuiZhu, Dalvi Mishra,
+Ming, Yu, Han, Lee, Pfister; arXiv:2610.14224, 2026). It is not affiliated with or endorsed
+by the authors or their institutions.
+
+The improver stage prompts in h2lab/prompts.py are condensed and adapted from the prompts of
+the official release, https://github.com/google-research/harness2 (Copyright 2026 Google LLC,
+Apache License 2.0). The eight-component harness layout follows the paper's Table 5.
+All other code, the task suite, the simulator, the adaptive-recursion side quest and the web
+app are original to this project.

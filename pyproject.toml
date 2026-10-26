@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "h2lab"
+version = "0.1.0"
+description = "Harness² Lab: a readable implementation of recursive agent harnessing, with a web lab"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = ["anthropic>=1.0", "openai>=1.0", "fastapi>=0.110", "uvicorn>=0.30"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+h2lab = "h2lab.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["h2lab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 110

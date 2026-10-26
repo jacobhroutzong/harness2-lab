@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check h2lab app tests scripts --select E,F,W,I,B --ignore E501,B008,B023,B905
+      - run: python -m pytest -q
+      - name: Smoke-test the CLI on the simulator
+        run: python -m h2lab.cli --tasks fin-01,ops-02 --k 1

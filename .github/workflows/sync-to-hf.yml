@@ -1,0 +1,24 @@
+# Mirrors this repository to a Hugging Face Space on every push to main.
+# One-time setup: create a Docker Space, then in this GitHub repo add
+#   - secret   HF_TOKEN  (a Hugging Face token with write access)
+#   - variable HF_SPACE  (e.g. your-hf-username/harness2-lab)
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    if: ${{ vars.HF_SPACE != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: git push --force "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" HEAD:main

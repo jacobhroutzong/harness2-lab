@@ -1,0 +1,4 @@
+anthropic>=1.17,<2
+openai>=3.0,<4
+fastapi>=0.156,<1
+uvicorn>=0.54,<1

@@ -1,0 +1,160 @@
+{
+  "points": [
+    {
+      "name": "Base harness H0",
+      "family": "base",
+      "score": 61.0,
+      "score_se": 4.7,
+      "sessions": 1.0,
+      "tokens": 53093,
+      "mean_k": 0,
+      "seeds": 12
+    },
+    {
+      "name": "Parallel k=1",
+      "family": "parallel",
+      "score": 74.07,
+      "score_se": 3.04,
+      "sessions": 8.0,
+      "tokens": 451203,
+      "mean_k": 1,
+      "seeds": 12
+    },
+    {
+      "name": "Parallel k=2",
+      "family": "parallel",
+      "score": 91.26,
+      "score_se": 2.37,
+      "sessions": 16.0,
+      "tokens": 1326205,
+      "mean_k": 2,
+      "seeds": 12
+    },
+    {
+      "name": "Parallel k=3",
+      "family": "parallel",
+      "score": 92.87,
+      "score_se": 1.47,
+      "sessions": 23.0,
+      "tokens": 2869209,
+      "mean_k": 3,
+      "seeds": 12
+    },
+    {
+      "name": "Sequential k=2",
+      "family": "sequential",
+      "score": 89.69,
+      "score_se": 1.52,
+      "sessions": 15.95,
+      "tokens": 1164490,
+      "mean_k": 2,
+      "seeds": 12
+    },
+    {
+      "name": "Sequential k=3",
+      "family": "sequential",
+      "score": 94.48,
+      "score_se": 1.43,
+      "sessions": 22.99,
+      "tokens": 2123136,
+      "mean_k": 3,
+      "seeds": 12
+    },
+    {
+      "name": "Adaptive B=1.5N",
+      "family": "adaptive",
+      "score": 82.31,
+      "score_se": 3.21,
+      "sessions": 11.97,
+      "tokens": 1059343,
+      "mean_k": 1.29,
+      "seeds": 12
+    },
+    {
+      "name": "Adaptive B=2N",
+      "family": "adaptive",
+      "score": 82.31,
+      "score_se": 3.62,
+      "sessions": 12.75,
+      "tokens": 1104720,
+      "mean_k": 1.4,
+      "seeds": 12
+    },
+    {
+      "name": "Adaptive B=3N",
+      "family": "adaptive",
+      "score": 85.16,
+      "score_se": 1.71,
+      "sessions": 13.63,
+      "tokens": 1134442,
+      "mean_k": 1.53,
+      "seeds": 12
+    },
+    {
+      "name": "Parallel k=1, w/o library",
+      "family": "ablation",
+      "score": 72.36,
+      "score_se": 3.38,
+      "sessions": 8.0,
+      "tokens": 438046,
+      "mean_k": 1,
+      "seeds": 12
+    },
+    {
+      "name": "Parallel k=1, w/o composition",
+      "family": "ablation",
+      "score": 79.21,
+      "score_se": 3.12,
+      "sessions": 6.96,
+      "tokens": 321847,
+      "mean_k": 1,
+      "seeds": 12
+    },
+    {
+      "name": "Parallel k=1, w/o scoping",
+      "family": "ablation",
+      "score": 77.59,
+      "score_se": 3.34,
+      "sessions": 8.0,
+      "tokens": 427439,
+      "mean_k": 1,
+      "seeds": 12
+    }
+  ],
+  "frontier": [
+    "Base harness H0",
+    "Parallel k=2",
+    "Sequential k=2",
+    "Sequential k=3",
+    "Adaptive B=1.5N",
+    "Adaptive B=3N",
+    "Parallel k=1, w/o composition"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "tasks": [
+    "fin-01",
+    "fin-02",
+    "fin-03",
+    "ops-01",
+    "ops-02",
+    "ops-03",
+    "ana-01",
+    "ana-02",
+    "ana-03"
+  ],
+  "note": "Simulator results: a toy world with calibrated failure modes, not a replication of the paper's benchmarks.",
+  "generated_seconds": 583.6
+}
