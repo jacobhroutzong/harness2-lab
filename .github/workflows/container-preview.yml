@@ -1,0 +1,66 @@
+name: Candidate container
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/container-preview.yml'
+      - '.dockerignore'
+      - 'Dockerfile'
+      - 'app/**'
+      - 'cloudflare/**'
+      - 'h2lab/**'
+      - 'requirements.txt'
+      - 'wrangler.harness-preview.jsonc'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: node --test cloudflare/preview-proxy.test.mjs
+      - name: Build the existing application image
+        run: docker build --tag harness-preview:test .
+      - name: Smoke-test the simulator in an isolated Basic-sized container
+        run: |
+          docker run --detach --name harness-preview --network none \
+            --cpus 0.25 --memory 1g --env H2_ALLOW_SERVER_KEYS=0 harness-preview:test
+          docker exec -i harness-preview python - <<'PY'
+          import json
+          import time
+          from urllib.error import URLError
+          from urllib.request import Request, urlopen
+
+          origin = "http://127.0.0.1:7860"
+          deadline = time.monotonic() + 45
+          while True:
+              try:
+                  with urlopen(origin + "/healthz", timeout=3) as response:
+                      assert response.status == 200
+                  break
+              except (URLError, TimeoutError):
+                  if time.monotonic() >= deadline:
+                      raise
+                  time.sleep(0.25)
+
+          request = Request(origin + "/api/runs",
+                            data=json.dumps({"backend": "sim", "tasks": ["ops-02"], "k": 1}).encode(),
+                            headers={"Content-Type": "application/json"})
+          with urlopen(request, timeout=10) as response:
+              run_id = json.load(response)["id"]
+
+          events_url = origin + f"/api/runs/{run_id}/events"
+          with urlopen(events_url, timeout=45) as stream:
+              events = [json.loads(line[6:]) for line in stream if line.startswith(b"data: ")]
+          assert events[0]["type"] == "stream_start"
+          assert events[-1]["type"] == events[-1]["status"] == "done"
+          print(f"Simulator reached done with {len(events)} streamed events")
+          PY
+      - name: Show simulator container logs on failure
+        if: failure()
+        run: docker logs harness-preview || true
