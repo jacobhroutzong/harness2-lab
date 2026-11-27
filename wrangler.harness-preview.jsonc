@@ -1,0 +1,16 @@
+{
+  "name": "harness2-runtime-preview",
+  "main": "cloudflare/preview.mjs",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": false,
+  "preview_urls": false,
+  "containers": [{
+    "class_name": "HarnessPreview",
+    "scheduling_policy": "durable_object",
+    "images": { "base": { "dockerfile": "./Dockerfile" } }
+  }],
+  "durable_objects": {
+    "bindings": [{ "name": "HARNESS_PREVIEW", "class_name": "HarnessPreview" }]
+  },
+  "exports": { "HarnessPreview": { "type": "durable-object", "storage": "sqlite" } }
+}
